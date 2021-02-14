@@ -1,0 +1,31 @@
+{
+  "name": "todoapp",
+  "productName": "To Do App",
+  "version": "1.0.0",
+  "description": "Simple App",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^11.0.3"
+  },
+  "scripts": {
+    "start": "electron .",
+    "build-installer": "electron-packager"
+  },
+  "build": {
+    "appId": "TO_DO_APP",
+    "win": {
+      "target": ["nsis"],
+      "icon": "Icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  
+  "author": "Kaarthik",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "^2.29.1"
+  }
+}

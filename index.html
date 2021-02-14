@@ -1,0 +1,562 @@
+<html>
+
+<head>
+  <title>To Do APP</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="bootstrap.css">
+  <style>
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1;
+      padding-top: 100px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgb(0, 0, 0);
+      background-color: rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    #NoTasks {
+      margin: 20px;
+    }
+  </style>
+  <script>
+    var user = "Kaarthik";
+    //Display the modal form
+    function displayModalForm() {
+      let modal = document.getElementById("myModal");
+      modal.style.display = "block";
+      let span = document.getElementsByClassName("close")[0];
+      span.onclick = function () {
+        modal.style.display = "none";
+      }
+      window.onclick = function (event) {
+        if (event.target == modal) {
+          modal.style.display = "none";
+        }
+      }
+    }
+
+    //Display modal form details fully
+    function displayDetailsFully(clickedElement) {
+      let modalF = document.getElementById("myModalFully");
+      modalF.style.display = "block";
+      let span = document.getElementsByClassName("close")[1];
+      span.onclick = function () {
+        modalF.style.display = "none";
+      }
+      window.onclick = function (event) {
+        if (event.target == modalF) {
+          modalF.style.display = "none";
+        }
+      }
+      let tasks1 = JSON.parse(localStorage.getItem(user));
+      let description1 = JSON.parse(localStorage.getItem("description_" + user));
+      let deadline1 = JSON.parse(localStorage.getItem("deadline_" + user));
+      let priority1 = JSON.parse(localStorage.getItem("priority_" + user));
+      let difficulties1 = JSON.parse(localStorage.getItem("difficulty_" + user));
+      let timeTakings1 = JSON.parse(localStorage.getItem("time_" + user));
+      let categories1 = JSON.parse(localStorage.getItem("category_" + user));
+
+      document.getElementById("DisplayTaskName").innerHTML = tasks1[clickedElement];
+      document.getElementById("DisplayTaskDescription").innerHTML = description1[clickedElement];
+      document.getElementById("DisplayTaskDeadline").innerHTML = deadline1[clickedElement];
+      document.getElementById("DisplayTaskPriority").innerHTML = priority1[clickedElement];
+      document.getElementById("DisplayTaskDifficulty").innerHTML = difficulties1[clickedElement];
+      document.getElementById("DisplayTaskTimeConsumption").innerHTML = timeTakings1[clickedElement];
+      document.getElementById("DisplayTaskCategory").innerHTML = categories1[clickedElement];
+    }
+
+    //display Task
+    function displayTask() {
+      //Delete Previous Displaying Area
+      let temp_Delete = document.getElementById("TasksDisplayingArea");
+      temp_Delete.remove();
+      let addingAfterRemoval = document.getElementsByClassName("table table-hover");
+      let newTbody = document.createElement("tbody");
+      newTbody.setAttribute("id", "TasksDisplayingArea");
+      addingAfterRemoval[0].appendChild(newTbody);
+      let taskFromLocalStorage = JSON.parse(localStorage.getItem(user)); //Get the tasks from localStorage
+      let deadlineFromLocalStorage = JSON.parse(localStorage.getItem("deadline_" + user));
+      let difficultyFromLocalStorage = JSON.parse(localStorage.getItem("difficulty_" + user));
+      let categoryFromLocalStorage = JSON.parse(localStorage.getItem("category_" + user));
+
+      if (taskFromLocalStorage === null || taskFromLocalStorage.length == 0) {
+        document.getElementById("NoTasks").style.display = "block";
+        document.getElementById("tableDisplay").style.display = "none";
+      }
+      else {
+        let DisplayArea1 = document.getElementById("TasksDisplayingArea");
+        for (var i = 0; i < taskFromLocalStorage.length; i++) {
+          let trs = document.createElement("tr");
+          trs.setAttribute("id", i);
+          trs.setAttribute("ondblclick", "displayDetailsFully(this.id)");
+          DisplayArea1.appendChild(trs);
+          let thead1 = document.createElement("th");
+          thead1.setAttribute("scope", "row");
+          thead1.innerHTML = i + 1;
+          trs.appendChild(thead1);
+          let taskDisplaytd = document.createElement("td");
+          trs.appendChild(taskDisplaytd);
+          taskDisplaytd.innerHTML = taskFromLocalStorage[i];
+          let deadlineDisplaytd = document.createElement("td");
+          trs.appendChild(deadlineDisplaytd);
+          deadlineDisplaytd.innerHTML = deadlineFromLocalStorage[i];
+          let difficultyDisplaytd = document.createElement("td");
+          trs.appendChild(difficultyDisplaytd);
+          difficultyDisplaytd.innerHTML = difficultyFromLocalStorage[i];
+          let categoryDisplaytd = document.createElement("td");
+          trs.appendChild(categoryDisplaytd);
+          categoryDisplaytd.innerHTML = categoryFromLocalStorage[i];
+          let doneDisplaytd = document.createElement("td");
+          trs.appendChild(doneDisplaytd);
+          let tickMarkDisplay = document.createElement("i");
+          doneDisplaytd.appendChild(tickMarkDisplay);
+          tickMarkDisplay.setAttribute("class", "fa fa-check");
+          tickMarkDisplay.setAttribute("style", "color: lightgreen;");
+          tickMarkDisplay.setAttribute("id", "tick_" + i.toString());
+          tickMarkDisplay.setAttribute("onclick", "tick(this.id)");
+          let deleteDisplaytd = document.createElement("td");
+          trs.appendChild(deleteDisplaytd);
+          let deleteMarkDisplay = document.createElement("i");
+          deleteDisplaytd.appendChild(deleteMarkDisplay);
+          deleteDisplaytd.setAttribute("id", "cross_" + i.toString());
+          deleteMarkDisplay.setAttribute("class", "fa fa-close");
+          deleteMarkDisplay.setAttribute("style", "color: red;");
+          deleteDisplaytd.setAttribute("onclick", "cross(this.id)");
+        }
+      }
+    }
+  </script>
+</head>
+
+<body onload="displayTask()">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">To Do App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+      aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="importantMatrix.html">The important Matrix</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="TaskPriority.html">Task Priority</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br>
+  <div id="tableDisplay">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">S.No</th>
+          <th scope="col">Task</th>
+          <th scope="col">Deadline</th>
+          <th scope="col">Difficulty</th>
+          <th scope="col">Category</th>
+          <th scope="col">Done</th>
+          <th scope="col">Delete</th>
+        </tr>
+      </thead>
+      <tbody id="TasksDisplayingArea">
+
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="NoTasks" style="display: none;">There are No Tasks</h3>
+  <button type="button" onclick="displayModalForm()" class="btn btn-success btn-lg" style="margin:25px;"> Add
+    Task</button>
+  <div id="myModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h3>Add Task</h3>
+      <form>
+        <div class="form-group">
+          <label>Task</label>
+          <input type="text" id="addingTask" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="addingDescription" cols="6" rows="10" class="form-control"
+            placeholder="Enter the task description.."></textarea>
+        </div>
+        <div class="form-group">
+          <label>Deadline</label>
+          <input type="datetime-local" id="addingDeadline" class="form-control">
+        </div>
+        <div class="form-group">
+          <label>Priority</label>
+          <div class="form-group">
+            <select class="custom-select" id="addingPriority" required>
+              <option selected="" disabled>Open this select menu</option>
+              <option value="Very Important">Very Important</option>
+              <option value="Important">Important</option>
+              <option value="Medium">Medium</option>
+              <option value="Not Important">Not Important</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Difficulty</label>
+          <input type="number" class="form-control" id="Difficulty" min="0" max="5" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Time Taking Rating</label>
+          <input type="number" class="form-control" id="TimeTaking" min="0" max="5" step="0.1">
+        </div>
+        <div class="form-group">
+          <label>Category</label>
+          <div class="form-group">
+            <select class="custom-select" id="Category" required>
+              <option selected disabled>Select Category</option>
+              <option value="Academics">Academics</option>
+              <option value="Non-Academics">Non-Academics</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="submit" class="btn btn-primary" onclick="addTask()">Submit</button>
+        </div>
+      </form>
+
+    </div>
+
+  </div>
+
+  <div id="myModalFully" class="modal">
+    <div class="modal-content" id="modal-contentFully">
+      <span class="close">&times;</span>
+      <br>
+      <div id="toBeDeletedAtStart">
+        <h3>TASK DETAILS</h3>
+        <br>
+        <p><strong>Task Name:</strong> <span id="DisplayTaskName"></span></p>
+        <p><strong>Task Description:</strong> <span id="DisplayTaskDescription"></span></p>
+        <p><strong>Task Deadline:</strong> <span id="DisplayTaskDeadline"></span></p>
+        <p><strong>Task Priority:</strong> <span id="DisplayTaskPriority"></span></p>
+        <p><strong>Task Difficulty:</strong> <span id="DisplayTaskDifficulty"></span></p>
+        <p><strong>Task Time Consuming Rating:</strong> <span id="DisplayTaskTimeConsumption"></span></p>
+        <p><strong>Task Category:</strong> <span id="DisplayTaskCategory"></span></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="tickModal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="TaskDoneSuccess">
+        <br>
+        <h4 style="text-align: center;">Congratulations, Task Successfully Done!!</h4>
+        <i class="fa fa-check-circle" style="font-size: 190px;color: green;margin-left: 43%;"></i>
+        <br>
+        <br>
+        <center>
+          <button type="button" id="pos" class="btn btn-success" style="margin-right: 25px;">Completed</button>
+          <button type="button" id="neg" class="btn btn-danger">Didn't Complete Yet</button>
+        </center>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="crossModal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="TaskDelete">
+        <br>
+        <h4 style="text-align: center;">Are You Sure, You Want to delete Task??</h4>
+        <i class="fa fa-times-circle-o" style="font-size: 190px;color: red;margin-left: 43%;"></i>
+        <br>
+        <br>
+        <center>
+          <button type="button" id="pos1" class="btn btn-success" style="margin-right: 25px;">Sure</button>
+          <button type="button" id="neg1" class="btn btn-danger">Cancel</button>
+        </center>
+      </div>
+    </div>
+  </div>
+
+</body>
+<script>
+
+  function tick(tickedTask) {
+    let modal = document.getElementById("tickModal");
+    modal.style.display = "block";
+    let span = document.getElementsByClassName("close")[2];
+    span.onclick = function () {
+      modal.style.display = "none";
+    }
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    //Delete Previous Displaying Area
+    let temp_Delete = document.getElementById("TasksDisplayingArea");
+    temp_Delete.remove();
+    let addingAfterRemoval = document.getElementsByClassName("table table-hover");
+    let newTbody = document.createElement("tbody");
+    newTbody.setAttribute("id", "TasksDisplayingArea");
+    addingAfterRemoval[0].appendChild(newTbody);
+    displayTask();
+
+    //Didn't Complete Task
+    let didntComplete = document.getElementById("neg");
+    didntComplete.onclick = function () {
+      modal.style.display = "none";
+    }
+
+    let Completed = document.getElementById("pos");
+    //Delete the Completed Task
+    var extractIndex = tickedTask.split('_'); //stores the index clicked
+    extractIndex = extractIndex[extractIndex.length - 1];
+
+    Completed.onclick = function () {
+      let tasks2 = JSON.parse(localStorage.getItem(user));
+      let description2 = JSON.parse(localStorage.getItem("description_" + user));
+      let deadline2 = JSON.parse(localStorage.getItem("deadline_" + user));
+      let priority2 = JSON.parse(localStorage.getItem("priority_" + user));
+      let difficulties2 = JSON.parse(localStorage.getItem("difficulty_" + user));
+      let timeTakings2 = JSON.parse(localStorage.getItem("time_" + user));
+      let categories2 = JSON.parse(localStorage.getItem("category_" + user));
+
+      //temporary arrays 
+      let taskTemp = [];
+      let descTemp = [];
+      let deadlineTemp = [];
+      let priorTemp = [];
+      let diffTemp = [];
+      let timeTakingTemp = [];
+      let catTemp = [];
+      for (var i = 0; i < tasks2.length; i++) {
+        if (i != parseInt(extractIndex)) {
+          taskTemp.push(tasks2[i]);
+          descTemp.push(description2[i]);
+          deadlineTemp.push(deadline2[i]);
+          priorTemp.push(priority2[i]);
+          diffTemp.push(difficulties2[i]);
+          timeTakingTemp.push(timeTakings2[i]);
+          catTemp.push(categories2[i]);
+        }
+      }
+      //Deleting Everthing in Local Storage
+      localStorage.removeItem(user);
+      localStorage.removeItem("description_" + user);
+      localStorage.removeItem("deadline_" + user);
+      localStorage.removeItem("priority_" + user);
+      localStorage.removeItem("difficulty_" + user);
+      localStorage.removeItem("time_" + user);
+      localStorage.removeItem("category_" + user);
+      //Storing Back
+      localStorage.setItem(user, JSON.stringify(taskTemp));
+      localStorage.setItem("description_" + user, JSON.stringify(descTemp));
+      localStorage.setItem("deadline_" + user, JSON.stringify(deadlineTemp));
+      localStorage.setItem("priority_" + user, JSON.stringify(priorTemp));
+      localStorage.setItem("difficulty_" + user, JSON.stringify(diffTemp));
+      localStorage.setItem("time_" + user, JSON.stringify(timeTakingTemp));
+      localStorage.setItem("category_" + user, JSON.stringify(catTemp));
+
+      modal.style.display = "none";
+      //Modify to display
+      //Delete Previous Displaying Area
+      let temp_Delete = document.getElementById("TasksDisplayingArea");
+      temp_Delete.remove();
+      let addingAfterRemoval = document.getElementsByClassName("table table-hover");
+      let newTbody = document.createElement("tbody");
+      newTbody.setAttribute("id", "TasksDisplayingArea");
+      addingAfterRemoval[0].appendChild(newTbody);
+      displayTask();
+    }
+  }
+
+  function cross(crossedTask) {
+    let modal = document.getElementById("crossModal");
+    modal.style.display = "block";
+    let span = document.getElementsByClassName("close")[3];
+    span.onclick = function () {
+      modal.style.display = "none";
+    }
+    window.onclick = function (event) {
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+
+    //Delete Previous Displaying Area
+    let temp_Delete = document.getElementById("TasksDisplayingArea");
+    temp_Delete.remove();
+    let addingAfterRemoval = document.getElementsByClassName("table table-hover");
+    let newTbody = document.createElement("tbody");
+    newTbody.setAttribute("id", "TasksDisplayingArea");
+    addingAfterRemoval[0].appendChild(newTbody);
+    displayTask();
+
+    //Didn't Complete Task
+    let didntComplete = document.getElementById("neg1");
+    didntComplete.onclick = function () {
+      modal.style.display = "none";
+    }
+
+    let Completed = document.getElementById("pos1");
+    //Delete the Completed Task
+    var extractIndex = crossedTask.split('_'); //stores the index clicked
+    extractIndex = extractIndex[extractIndex.length - 1];
+
+    Completed.onclick = function () {
+      let tasks2 = JSON.parse(localStorage.getItem(user));
+      let description2 = JSON.parse(localStorage.getItem("description_" + user));
+      let deadline2 = JSON.parse(localStorage.getItem("deadline_" + user));
+      let priority2 = JSON.parse(localStorage.getItem("priority_" + user));
+      let difficulties2 = JSON.parse(localStorage.getItem("difficulty_" + user));
+      let timeTakings2 = JSON.parse(localStorage.getItem("time_" + user));
+      let categories2 = JSON.parse(localStorage.getItem("category_" + user));
+
+      //temporary arrays 
+      let taskTemp = [];
+      let descTemp = [];
+      let deadlineTemp = [];
+      let priorTemp = [];
+      let diffTemp = [];
+      let timeTakingTemp = [];
+      let catTemp = [];
+      for (var i = 0; i < tasks2.length; i++) {
+        if (i != parseInt(extractIndex)) {
+          taskTemp.push(tasks2[i]);
+          descTemp.push(description2[i]);
+          deadlineTemp.push(deadline2[i]);
+          priorTemp.push(priority2[i]);
+          diffTemp.push(difficulties2[i]);
+          timeTakingTemp.push(timeTakings2[i]);
+          catTemp.push(categories2[i]);
+        }
+      }
+      //Deleting Everthing in Local Storage
+      localStorage.removeItem(user);
+      localStorage.removeItem("description_" + user);
+      localStorage.removeItem("deadline_" + user);
+      localStorage.removeItem("priority_" + user);
+      localStorage.removeItem("difficulty_" + user);
+      localStorage.removeItem("time_" + user);
+      localStorage.removeItem("category_" + user);
+      //Storing Back
+      localStorage.setItem(user, JSON.stringify(taskTemp));
+      localStorage.setItem("description_" + user, JSON.stringify(descTemp));
+      localStorage.setItem("deadline_" + user, JSON.stringify(deadlineTemp));
+      localStorage.setItem("priority_" + user, JSON.stringify(priorTemp));
+      localStorage.setItem("difficulty_" + user, JSON.stringify(diffTemp));
+      localStorage.setItem("time_" + user, JSON.stringify(timeTakingTemp));
+      localStorage.setItem("category_" + user, JSON.stringify(catTemp));
+
+      modal.style.display = "none";
+      //Modify to display
+      //Delete Previous Displaying Area
+      let temp_Delete = document.getElementById("TasksDisplayingArea");
+      temp_Delete.remove();
+      let addingAfterRemoval = document.getElementsByClassName("table table-hover");
+      let newTbody = document.createElement("tbody");
+      newTbody.setAttribute("id", "TasksDisplayingArea");
+      addingAfterRemoval[0].appendChild(newTbody);
+      displayTask();
+    }
+  }
+
+  function addTask() {
+    let disappearModal = document.getElementById("myModal");
+    disappearModal.style.display = "none";
+
+    let taskValue = document.getElementById("addingTask");
+    let descriptionValue = document.getElementById("addingDescription");
+    let deadlineValue = document.getElementById("addingDeadline");
+    let priorityValue = document.getElementById("addingPriority");
+    let DifficultyValue = document.getElementById("Difficulty");
+    let TimeTakingValue = document.getElementById("TimeTaking");
+    let CategoryValue = document.getElementById("Category");
+    //Getting from LocalStorage and adding newly added item to it
+    let tasksFromLocalStorage = JSON.parse(localStorage.getItem(user));
+    let descriptionsFromLocalStorage = JSON.parse(localStorage.getItem("description_" + user));
+    let deadlinesFromLocalStorage = JSON.parse(localStorage.getItem("deadline_" + user));
+    let prioritiesFromLocalStorage = JSON.parse(localStorage.getItem("priority_" + user));
+    let difficultiesFromLocalStorage = JSON.parse(localStorage.getItem("difficulty_" + user));
+    let timeTakingsFromLocalStorage = JSON.parse(localStorage.getItem("time_" + user));
+    let categoriesFromLocalStorage = JSON.parse(localStorage.getItem("category_" + user));
+
+    let tasksArray = [];
+    let descriptionArray = [];
+    let deadlineArray = [];
+    let priorityArray = [];
+    let DifficultyArray = [];
+    let TimeTakingArray = [];
+    let CategoryArray = [];
+
+    if (tasksFromLocalStorage === null) {
+      tasksArray.push(taskValue.value);
+      descriptionArray.push(descriptionValue.value);
+      deadlineArray.push(deadlineValue.value);
+      priorityArray.push(priorityValue.value);
+      DifficultyArray.push(DifficultyValue.value);
+      TimeTakingArray.push(TimeTakingValue.value);
+      CategoryArray.push(CategoryValue.value);
+    }
+    else {
+      for (var i = 0; i < tasksFromLocalStorage.length; i++) {
+        tasksArray.push(tasksFromLocalStorage[i]);
+        descriptionArray.push(descriptionsFromLocalStorage[i]);
+        deadlineArray.push(deadlinesFromLocalStorage[i]);
+        priorityArray.push(prioritiesFromLocalStorage[i]);
+        DifficultyArray.push(difficultiesFromLocalStorage[i]);
+        TimeTakingArray.push(timeTakingsFromLocalStorage[i]);
+        CategoryArray.push(categoriesFromLocalStorage[i]);
+      }
+      tasksArray.push(taskValue.value);
+      descriptionArray.push(descriptionValue.value);
+      deadlineArray.push(deadlineValue.value);
+      priorityArray.push(priorityValue.value);
+      DifficultyArray.push(DifficultyValue.value);
+      TimeTakingArray.push(TimeTakingValue.value);
+      CategoryArray.push(CategoryValue.value);
+    }
+    //functionality
+    localStorage.setItem(user, JSON.stringify(tasksArray));
+    localStorage.setItem("description_" + user, JSON.stringify(descriptionArray));
+    localStorage.setItem("deadline_" + user, JSON.stringify(deadlineArray));
+    localStorage.setItem("priority_" + user, JSON.stringify(priorityArray));
+    localStorage.setItem("difficulty_" + user, JSON.stringify(DifficultyArray));
+    localStorage.setItem("time_" + user, JSON.stringify(TimeTakingArray));
+    localStorage.setItem("category_" + user, JSON.stringify(CategoryArray));
+    //add to display
+    displayTask();
+  }
+</script>
+
+</html>

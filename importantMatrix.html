@@ -1,0 +1,292 @@
+<html>
+
+<head>
+  <title>To Do APP</title>
+  <link rel="stylesheet" href="bootstrap.css">
+</head>
+
+<body onload="categorize()">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">To Do App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+      aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="TaskPriority.html">Task Priority</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br>
+  <!--Tabs-->
+  <ul class="nav nav-tabs">
+    <li class="nav-item">
+      <a class="nav-link active" id="VI" data-toggle="tab" href="#VeryImportant" onclick="CalledByVI()">Important and
+        Urgent</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="I" data-toggle="tab" href="#Important" onclick="CalledByI()">Important and not Urgent</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="U" data-toggle="tab" href="#Urgent" onclick="CalledByU()">Not Important and Urgent</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="N" data-toggle="tab" href="#NothingMuch" onclick="CalledBYN()">Not Important and not
+        Urgent</a>
+    </li>
+  </ul>
+  <div id="myTabContent" class="tab-content" style="margin: 15px;">
+    <div class="tab-pane fade active show" id="VeryImportant">
+      <div id="VI-content">
+
+      </div>
+    </div>
+    <div class="tab-pane fade" id="Important">
+      <div id="I-content">
+
+      </div>
+    </div>
+    <div class="tab-pane fade" id="Urgent">
+      <div id="U-content">
+
+      </div>
+    </div>
+    <div class="tab-pane fade" id="NothingMuch">
+      <div id="N-content">
+
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  var user = "Kaarthik";
+  var allTasks = JSON.parse(localStorage.getItem(user));
+  var TasksVI = []; //Important and Urgent
+  var TasksI = [];  //Important and not Urgent
+  var TasksU = [];  //Not Important and Urgent
+  var TasksN = [];  //Not Important and not Urgent
+  //One bug here !!! I take week calculation from this week's monday to next week monday
+  function isThisWeek(date) {
+    var date = new Date(date);
+
+    var future = new Date(); // get today date
+    future.setDate(future.getDate() + 7); // add 7 days
+
+    return (date <= future);
+
+  }
+
+  function categorize() {
+    allTasks = JSON.parse(localStorage.getItem(user));
+    TasksVI = []; //Important and Urgent
+    TasksI = [];  //Important and not Urgent
+    TasksU = [];  //Not Important and Urgent
+    TasksN = [];  //Not Important and not Urgent
+    var TasksThisWeek = []; //Stores whether the given date is in this week
+    var deadlineAllTasks = JSON.parse(localStorage.getItem("deadline_" + user));
+    if (allTasks != null)
+      for (var i = 0; i < allTasks.length; i++) {
+        TasksThisWeek.push(isThisWeek(deadlineAllTasks[i]));
+      }
+
+    //Finished
+    var PriorityAllTasks = JSON.parse(localStorage.getItem("priority_" + user));
+    if (allTasks != null)
+      for (var i = 0; i < allTasks.length; i++) {
+        if (PriorityAllTasks[i] == "Very Important" || PriorityAllTasks[i] == "Important") {
+          if (TasksThisWeek[i]) {
+            TasksVI.push(allTasks[i]);
+          }
+          else {
+            TasksI.push(allTasks[i]);
+          }
+        }
+        else {
+          if (TasksThisWeek[i]) {
+            TasksU.push(allTasks[i]);
+          }
+          else {
+            TasksN.push(allTasks[i]);
+          }
+        }
+      }
+    displayVI();
+  }
+
+  function CalledByVI() {
+    document.getElementById("VI").setAttribute("class", "nav-link active");
+    document.getElementById("I").setAttribute("class", "nav-link");
+    document.getElementById("U").setAttribute("class", "nav-link");
+    document.getElementById("N").setAttribute("class", "nav-link");
+    //Changing content place
+    document.getElementById("VeryImportant").setAttribute("class", "tab-pane fade active show");
+    document.getElementById("Important").setAttribute("class", "tab-pane fade");
+    document.getElementById("Urgent").setAttribute("class", "tab-pane fade");
+    document.getElementById("NothingMuch").setAttribute("class", "tab-pane fade");
+    displayVI();
+  }
+
+  function displayVI() {
+    //removing old data
+    var here1 = document.getElementById("VI-content");
+    here1.remove();
+    var BHere1 = document.getElementById("VeryImportant");
+    //creating same thing again
+    var Here1 = document.createElement("div");
+    Here1.setAttribute("id", "VI-content");
+    BHere1.appendChild(Here1);
+
+
+    for (var i = 0; i < TasksVI.length; i++) {
+      var sample1 = document.createElement("p");
+      sample1.innerHTML = "";
+      sample1.innerHTML += (i + 1).toString();
+      sample1.innerHTML += ") ";
+      sample1.innerHTML += TasksVI[i];
+      let inter_dummy = allTasks.indexOf(TasksVI[i]) + 1;
+      sample1.innerHTML += " (" + " The Serial Number of the Task in Home is: " + inter_dummy + " " + ")";
+      Here1.appendChild(sample1);
+    }
+
+    if (TasksVI.length == 0) {
+      var sample1 = document.createElement("h4");
+      sample1.innerHTML = "There are No tasks in this section!.";
+      Here1.appendChild(sample1);
+    }
+
+  }
+
+  function CalledByI() {
+    document.getElementById("I").setAttribute("class", "nav-link active");
+    document.getElementById("VI").setAttribute("class", "nav-link");
+    document.getElementById("U").setAttribute("class", "nav-link");
+    document.getElementById("N").setAttribute("class", "nav-link");
+    //Changing Content Page
+    document.getElementById("Important").setAttribute("class", "tab-pane fade active show");
+    document.getElementById("VeryImportant").setAttribute("class", "tab-pane fade");
+    document.getElementById("Urgent").setAttribute("class", "tab-pane fade");
+    document.getElementById("NothingMuch").setAttribute("class", "tab-pane fade");
+    displayI();
+  }
+
+  function displayI() {
+    //removing old data
+    var here2 = document.getElementById("I-content");
+    here2.remove();
+    var BHere2 = document.getElementById("Important");
+    //creating same thing again
+    var Here2 = document.createElement("div");
+    Here2.setAttribute("id", "I-content");
+    BHere2.appendChild(Here2);
+
+
+    for (var i = 0; i < TasksI.length; i++) {
+      var sample2 = document.createElement("p");
+      sample2.innerHTML = "";
+      sample2.innerHTML += (i + 1).toString();
+      sample2.innerHTML += ") ";
+      sample2.innerHTML += TasksI[i];
+      let inter_dummy = allTasks.indexOf(TasksI[i]) + 1;
+      sample2.innerHTML += " (" + " The Serial Number of the Task in Home is: " + inter_dummy + " " + ")";
+      Here2.appendChild(sample2);
+    }
+
+    if (TasksI.length == 0) {
+      var sample2 = document.createElement("h4");
+      sample2.innerHTML = "There are No tasks in this section!.";
+      Here2.appendChild(sample2);
+    }
+  }
+
+  function CalledByU() {
+    document.getElementById("U").setAttribute("class", "nav-link active");
+    document.getElementById("I").setAttribute("class", "nav-link");
+    document.getElementById("VI").setAttribute("class", "nav-link");
+    document.getElementById("N").setAttribute("class", "nav-link");
+    //Changing Content Page
+    document.getElementById("Urgent").setAttribute("class", "tab-pane fade active show");
+    document.getElementById("Important").setAttribute("class", "tab-pane fade");
+    document.getElementById("VeryImportant").setAttribute("class", "tab-pane fade");
+    document.getElementById("NothingMuch").setAttribute("class", "tab-pane fade");
+    displayU();
+  }
+
+  function displayU() {
+    //removing old data
+    var here3 = document.getElementById("U-content");
+    here3.remove();
+    var BHere3 = document.getElementById("Urgent");
+    //creating same thing again
+    var Here3 = document.createElement("div");
+    Here3.setAttribute("id", "U-content");
+    BHere3.appendChild(Here3);
+
+
+    for (var i = 0; i < TasksU.length; i++) {
+      var sample3 = document.createElement("p");
+      sample3.innerHTML = "";
+      sample3.innerHTML += (i + 1).toString();
+      sample3.innerHTML += ") ";
+      sample3.innerHTML += TasksU[i];
+      let inter_dummy = allTasks.indexOf(TasksU[i]) + 1;
+      sample3.innerHTML += " (" + " The Serial Number of the Task in Home is: " + inter_dummy + " " + ")";
+      Here3.appendChild(sample3);
+    }
+    if (TasksU.length == 0) {
+      var sample3 = document.createElement("h4");
+      sample3.innerHTML = "There are No tasks in this section!.";
+      Here3.appendChild(sample3);
+    }
+
+  }
+
+  function CalledBYN() {
+    document.getElementById("N").setAttribute("class", "nav-link active");
+    document.getElementById("I").setAttribute("class", "nav-link");
+    document.getElementById("U").setAttribute("class", "nav-link");
+    document.getElementById("VI").setAttribute("class", "nav-link");
+    //Changing Content Page
+    document.getElementById("NothingMuch").setAttribute("class", "tab-pane fade active show");
+    document.getElementById("Important").setAttribute("class", "tab-pane fade");
+    document.getElementById("Urgent").setAttribute("class", "tab-pane fade");
+    document.getElementById("VeryImportant").setAttribute("class", "tab-pane fade");
+    displayN();
+  }
+
+  function displayN() {
+    //removing old data
+    var here4 = document.getElementById("N-content");
+    here4.remove();
+    var BHere4 = document.getElementById("NothingMuch");
+    //creating same thing again
+    var Here4 = document.createElement("div");
+    Here4.setAttribute("id", "N-content");
+    BHere4.appendChild(Here4);
+
+
+    for (var i = 0; i < TasksN.length; i++) {
+      var sample4 = document.createElement("p");
+      sample4.innerHTML = "";
+      sample4.innerHTML += (i + 1).toString();
+      sample4.innerHTML += ") ";
+      sample4.innerHTML += TasksN[i];
+      let inter_dummy = allTasks.indexOf(TasksN[i]) + 1;
+      sample4.innerHTML += " (" + " The Serial Number of the Task in Home is: " + inter_dummy + " " + ")";
+      Here4.appendChild(sample4);
+    }
+    if (TasksN.length == 0) {
+      var sample4 = document.createElement("h4");
+      sample4.innerHTML = "There are No tasks in this section!.";
+      Here4.appendChild(sample4);
+    }
+  }
+</script>
+
+</html>

@@ -1,0 +1,111 @@
+<html>
+
+<head>
+  <title>To Do APP</title>
+  <link rel="stylesheet" href="bootstrap.css">
+  <style>
+    #NoTasks {
+      margin: 20px;
+    }
+  </style>
+</head>
+
+<body onload="DisplayTask()">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <a class="navbar-brand" href="#">To Do App</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+      aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarColor01">
+      <ul class="navbar-nav mr-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="index.html">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="importantMatrix.html">The important Matrix</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+  <br>
+  <div id="tableDisplay">
+    <table class="table table-hover" id="simple1">
+      <thead>
+        <tr>
+          <th scope="col">S.No</th>
+          <th scope="col">Task</th>
+          <th scope="col">Serial Number in Home</th>
+        </tr>
+      </thead>
+      <tbody id="TasksDisplayingArea">
+
+      </tbody>
+    </table>
+  </div>
+
+  <h3 id="NoTasks" style="display: none;">There are No Tasks</h3>
+</body>
+<script>
+  var user = "Kaarthik";
+  function DisplayTask() {
+    var TasksFromLocal = JSON.parse(localStorage.getItem(user));
+    if (TasksFromLocal === null || TasksFromLocal.length == 0) {
+      document.getElementById("NoTasks").style.display = "block";
+      document.getElementById("tableDisplay").style.display = "none";
+    }
+    else {
+      var DisplayArea = document.getElementById("TasksDisplayingArea");
+      //removing old present data 
+      DisplayArea.remove();
+      //creating new area
+      var DisplayArea1 = document.createElement("tbody");
+      DisplayArea1.setAttribute("id", "TasksDisplayingArea");
+      var tableGet = document.getElementById("simple1");
+      tableGet.appendChild(DisplayArea1);
+      //Sorting based on the difficulty and time consumption rating (1.5*diff + timeRating)
+      var valuesComputed = [];
+      var difficultyValues = JSON.parse(localStorage.getItem("difficulty_" + user));
+      var TimeValues = JSON.parse(localStorage.getItem("time_" + user));
+      var indexes = []; //stores the sorted index values
+      //Storing the Computed values
+      for (var i = 0; i < TasksFromLocal.length; i++) {
+        valuesComputed.push((1.5 * parseFloat(difficultyValues[i])) + (parseFloat(TimeValues[i])));
+        indexes.push(i);
+      }
+      var temp_sample = 0;
+      //Sorting using Bubble Sort
+      for (var i = 0; i < TasksFromLocal.length - 1; i++) {
+        for (var j = i + 1; j < TasksFromLocal.length; j++) {
+          if (valuesComputed[j] > valuesComputed[i]) {
+            temp_sample = valuesComputed[j];
+            valuesComputed[j] = valuesComputed[i];
+            valuesComputed[i] = temp_sample;
+            //swapping indexes
+            temp_sample = indexes[j];
+            indexes[j] = indexes[i];
+            indexes[i] = temp_sample;
+          }
+        }
+      }
+      //Displaying
+      for (var i = 0; i < TasksFromLocal.length; i++) {
+        var row1 = document.createElement("tr");
+        DisplayArea1.appendChild(row1);
+        var td1 = document.createElement("th");
+        row1.appendChild(td1);
+        td1.innerHTML = i + 1;
+        td1.setAttribute("scope", "row");
+        var td2 = document.createElement("td");
+        row1.appendChild(td2);
+        td2.innerHTML = TasksFromLocal[indexes[i]];
+        var td3 = document.createElement("td");
+        row1.appendChild(td3);
+        td3.innerHTML = indexes.indexOf(i) + 1;
+      }
+    }
+  }
+</script>
+
+</html>
